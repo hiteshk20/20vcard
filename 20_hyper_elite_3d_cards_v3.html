@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>20 Hyper-Elite 3D Cards - Dribbble V3</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Manrope:wght@300;500;800&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* =========================================
+     V3: HYPER-ELITE GLOBAL SYSTEM
+     ========================================= */
+  :root {
+    --bg-void: #030304;
+    --text-primary: #fcfcfd;
+    --glass-edge: rgba(255, 255, 255, 0.08);
+    --glass-fill: rgba(20, 20, 25, 0.4);
+    --glow-cyan: #00e5ff;
+    --glow-magenta: #ff0055;
+    --glow-gold: #f9d877;
+  }
+  
+  *, *::before, *::after { box-sizing: border-box; }
+  
+  body {
+    margin: 0; background-color: var(--bg-void); color: var(--text-primary);
+    font-family: 'Manrope', sans-serif; overflow-x: hidden;
+    cursor: none; /* Custom cursor */
+  }
+
+  /* Ambient Animated Background */
+  .ambient-bg {
+    position: fixed; inset: 0; z-index: -2; pointer-events: none;
+    background: radial-gradient(circle at 15% 50%, rgba(0, 229, 255, 0.03), transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(255, 0, 85, 0.03), transparent 40%);
+    filter: blur(60px);
+  }
+  .ambient-noise {
+    position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.06;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Custom Magnetic Cursor */
+  #cursor {
+    position: fixed; top: 0; left: 0; width: 20px; height: 20px;
+    background: #fff; border-radius: 50%; pointer-events: none; z-index: 9999;
+    mix-blend-mode: exclusion; transform: translate(-50%, -50%);
+    transition: width 0.3s, height 0.3s; will-change: transform, width, height;
+  }
+  body:hover #cursor { opacity: 1; }
+  .hover-target:hover ~ #cursor, .v3-card:hover ~ #cursor { width: 60px; height: 60px; }
+
+  /* V3 Grid & Layout */
+  .grid-container {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 80px; padding: 100px 5vw; max-width: 2000px; margin: 0 auto;
+  }
+  .scene {
+    perspective: 2500px; display: flex; justify-content: center; align-items: center; min-height: 440px;
+  }
+
+  /* V3 Core Card Mechanics (JS Driven Lerp Physics) */
+  .v3-card {
+    position: relative; transform-style: preserve-3d;
+    will-change: transform;
+    /* Removed CSS transition for transform to let JS Spring Physics handle it */
+  }
+
+  /* Ultimate Glare Engine */
+  .v3-glare {
+    position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+    background: radial-gradient(circle 600px at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.15), transparent 40%);
+    opacity: var(--glare-op, 0); transition: opacity 0.4s ease; mix-blend-mode: color-dodge; z-index: 100;
+  }
+
+  /* Ultimate Drop Shadow Engine */
+  .v3-shadow {
+    position: absolute; inset: 5%; border-radius: inherit; z-index: -1;
+    background: rgba(0,0,0,0.8); filter: blur(30px);
+    transform: translateZ(-40px) translateX(calc((50% - var(--mx, 50%)) * 0.1)) translateY(calc((50% - var(--my, 50%)) * 0.1));
+    transition: transform 0.1s, opacity 0.4s; opacity: var(--glare-op, 0.4);
+  }
+
+  /* =========================================
+     C1: HYPER-HOLOGRAPHIC DEBIT
+     ========================================= */
+  .c1 {
+    width: 360px; height: 226px; border-radius: 24px; padding: 32px;
+    background: linear-gradient(120deg, #121318, #070709);
+    border: 1px solid var(--glass-edge); overflow: hidden;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05), inset 0 2px 20px rgba(255,255,255,0.03);
+  }
+  .c1-mesh {
+    position: absolute; inset: -50%; pointer-events: none;
+    background: conic-gradient(from var(--rot-y, 0deg) at var(--mx, 50%) var(--my, 50%), 
+      #00e5ff, #0055ff, #ff0055, #f9d877, #00e5ff);
+    filter: blur(40px) saturate(2); mix-blend-mode: overlay;
+    opacity: var(--glare-op, 0); transition: opacity 0.4s;
+  }
+  .c1-svg-pattern {
+    position: absolute; inset: 0; opacity: 0.15; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h40v40H0V0zm20 20h20v20H20V20zM0 20h20v20H0V20z' fill='%23fff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+  }
+  .c1-chip {
+    width: 52px; height: 40px; border-radius: 8px; margin-bottom: 50px;
+    background: linear-gradient(135deg, #e6e6e6, #a3a3a3);
+    transform: translateZ(30px); position: relative;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.6), inset 0 2px 4px #fff, inset 0 -2px 4px rgba(0,0,0,0.4);
+  }
+  .c1-chip::after { content:''; position:absolute; inset: 6px; border: 1px solid rgba(0,0,0,0.3); border-radius: 4px; }
+  .c1-text { transform: translateZ(40px); }
+  .c1-brand { font-family: 'Cinzel', serif; font-weight: 900; font-size: 28px; letter-spacing: 4px; position: absolute; top: 30px; right: 30px; transform: translateZ(20px); text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+  .c1-num { font-family: 'Space Grotesk', monospace; font-size: 24px; letter-spacing: 5px; color: #fff; text-shadow: 0 2px 15px rgba(255,255,255,0.4); }
+
+  /* =========================================
+     C2: QUANTUM GLASS CRYPTO
+     ========================================= */
+  .c2-wrap { position: relative; width: 340px; height: 210px; }
+  .c2-core { position: absolute; inset: 0; background: rgba(255,255,255,0.01); backdrop-filter: blur(30px); border-radius: 30px; border: 1px solid rgba(255,255,255,0.15); box-shadow: inset 0 0 20px rgba(255,255,255,0.05), 0 30px 60px rgba(0,0,0,0.8); display: flex; flex-direction: column; justify-content: space-between; padding: 28px; }
+  .c2-orb { position: absolute; border-radius: 50%; filter: blur(30px); transition: transform 0.5s ease-out; }
+  .c2-o1 { width: 160px; height: 160px; background: #6366f1; top: -40px; left: -30px; animation: floatX 8s infinite alternate; }
+  .c2-o2 { width: 200px; height: 200px; background: #ec4899; bottom: -50px; right: -40px; animation: floatY 7s infinite alternate; }
+  @keyframes floatX { to { transform: translateX(40px) scale(1.1); } }
+  @keyframes floatY { to { transform: translateY(-40px) scale(1.2); } }
+  .c2-wrap:hover .c2-o1 { transform: translate(-20px, -20px) scale(1.3); }
+  .c2-wrap:hover .c2-o2 { transform: translate(20px, 20px) scale(1.3); }
+  
+  .c2-chart { width: 100%; height: 50px; transform: translateZ(30px); }
+  .c2-chart svg { width: 100%; height: 100%; overflow: visible; }
+  .c2-chart path { fill: none; stroke: #10b981; stroke-width: 3; stroke-linecap: round; filter: drop-shadow(0 0 8px rgba(16,185,129,0.8)); stroke-dasharray: 1000; stroke-dashoffset: 1000; transition: stroke-dashoffset 1.5s cubic-bezier(0.2, 1, 0.3, 1); }
+  .c2-wrap:hover .c2-chart path { stroke-dashoffset: 0; }
+  .c2-text { transform: translateZ(40px); font-family: 'Space Grotesk'; font-size: 34px; font-weight: 700; }
+
+  /* =========================================
+     C3: BIOMETRIC VAULT CYLINDER
+     ========================================= */
+  .c3-scene { width: 300px; height: 420px; perspective: 2500px; cursor: pointer; }
+  .c3 { width: 100%; height: 100%; position: relative; transition: transform 1.2s cubic-bezier(0.8, -0.2, 0.2, 1.2); transform-style: preserve-3d; }
+  .c3.unlocked { transform: rotateY(180deg); }
+  .c3-face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 28px; background: radial-gradient(circle at top right, #24252a, #0b0c10); border: 1px solid #333; box-shadow: inset 0 2px 1px rgba(255,255,255,0.1), 0 40px 80px rgba(0,0,0,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .c3-back { transform: rotateY(180deg); }
+  
+  .c3-fingerprint { width: 100px; height: 100px; border-radius: 50%; box-shadow: 0 0 30px rgba(0, 229, 255, 0.1), inset 0 0 20px rgba(0, 229, 255, 0.2); border: 2px solid rgba(0,229,255,0.4); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; transform: translateZ(40px); }
+  .c3-fingerprint::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(transparent, rgba(0,229,255,0.8), transparent 40deg); animation: radar 3s linear infinite; }
+  @keyframes radar { to { transform: rotate(360deg); } }
+  
+  .c3-dial-3d { width: 180px; height: 180px; transform-style: preserve-3d; transition: transform 1s 0.5s; transform: translateZ(30px); }
+  .c3-dial-ring { position: absolute; inset: 0; border-radius: 50%; border: 12px solid #222; box-shadow: 0 20px 40px rgba(0,0,0,0.8), inset 0 5px 15px rgba(255,255,255,0.1); background: repeating-conic-gradient(#111 0 10deg, #222 10deg 20deg); }
+  .c3-dial-core { position: absolute; inset: 30px; border-radius: 50%; background: radial-gradient(#d97706, #78350f); border: 4px solid #000; box-shadow: inset 0 0 20px rgba(255,255,255,0.5); transform: translateZ(20px); }
+  .c3.unlocked .c3-dial-3d { transform: translateZ(60px) rotateZ(1080deg); }
+
+  /* =========================================
+     C4: DYNAMIC EXPLODING WEALTH FAN
+     ========================================= */
+  .c4-wrap { width: 280px; height: 400px; position: relative; }
+  .c4-layer { 
+    position: absolute; inset: 0; border-radius: 24px; padding: 30px;
+    background: rgba(25, 25, 32, 0.6); backdrop-filter: blur(15px);
+    border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    transition: all 0.8s cubic-bezier(0.2, 1.2, 0.3, 1); transform-origin: bottom right;
+    display: flex; flex-direction: column; justify-content: flex-end;
+  }
+  .c4-layer h3 { margin: 0; font-size: 20px; text-transform: uppercase; letter-spacing: 2px; }
+  .c4-layer p { margin: 5px 0 0; font-family: 'Space Grotesk'; font-size: 30px; font-weight: 700; }
+  
+  .c4-l1 { z-index: 1; border-top: 3px solid #34d399; } .c4-l1 p { color: #34d399; }
+  .c4-l2 { z-index: 2; border-top: 3px solid #60a5fa; } .c4-l2 p { color: #60a5fa; }
+  .c4-l3 { z-index: 3; border-top: 3px solid #c084fc; background: #1a1a24; } .c4-l3 p { color: #c084fc; }
+  
+  .c4-wrap:hover .c4-l1 { transform: rotate(-25deg) translate(-80px, -20px) translateZ(-40px); opacity: 0.6; }
+  .c4-wrap:hover .c4-l2 { transform: rotate(-12deg) translate(-40px, -10px) translateZ(-20px); opacity: 0.8; }
+  .c4-wrap:hover .c4-l3 { transform: rotate(0deg) translateZ(40px) scale(1.05); box-shadow: 0 40px 80px rgba(0,0,0,0.9); }
+
+  /* =========================================
+     C5: RPG HEX RADAR & FLOATING CRYSTAL
+     ========================================= */
+  .c5 {
+    width: 320px; height: 440px; border-radius: 20px; padding: 30px;
+    background: radial-gradient(circle at 50% 0%, #3a0d16, #090204);
+    border: 2px solid #5a1111; position: relative; display: flex; flex-direction: column; justify-content: flex-end;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.9), inset 0 0 50px rgba(220, 38, 38, 0.2);
+  }
+  .c5-crystal-core {
+    position: absolute; top: 10%; left: 50%; transform: translateX(-50%) translateZ(60px);
+    width: 100px; height: 160px; transform-style: preserve-3d;
+  }
+  .c5-shard {
+    position: absolute; inset: 0; background: linear-gradient(135deg, #ff4d4d, #800000);
+    clip-path: polygon(50% 0%, 100% 30%, 50% 100%, 0% 30%);
+    box-shadow: inset 0 0 20px #fff; opacity: 0.9;
+  }
+  .c5-shard:nth-child(2) { transform: rotateY(90deg); filter: brightness(0.6); }
+  .c5-orbit { position: absolute; top: 50%; left: 50%; width: 160px; height: 160px; border-radius: 50%; border: 1px dashed rgba(245, 158, 11, 0.3); transform: translate(-50%, -50%) rotateX(70deg); animation: orbit 10s linear infinite; }
+  .c5-orbit::before { content:''; position:absolute; top:-5px; left:50%; width:10px; height:10px; background:#F59E0B; border-radius:50%; box-shadow: 0 0 20px #F59E0B; }
+  @keyframes orbit { to { transform: translate(-50%, -50%) rotateX(70deg) rotateZ(360deg); } }
+  
+  .c5-radar { height: 100px; margin-top: 20px; display: flex; align-items: flex-end; gap: 4px; transform: translateZ(30px); }
+  .c5-radar-bar { flex: 1; background: #222; position: relative; border-radius: 2px 2px 0 0; }
+  .c5-radar-fill { position: absolute; bottom: 0; width: 100%; background: linear-gradient(to top, #b91c1c, #ef4444); box-shadow: 0 -5px 15px rgba(239, 68, 68, 0.5); border-radius: 2px 2px 0 0; transition: height 0.6s cubic-bezier(0.2,1,0.3,1); height: 0; }
+  .v3-card:hover .c5-radar-fill { height: var(--h); transition-delay: var(--d); }
+
+  /* =========================================
+     C6: CINEMATIC GOLD FOIL TICKET
+     ========================================= */
+  .c6 {
+    width: 480px; height: 180px; display: flex; background: #0c0c0c;
+    border-radius: 12px; position: relative;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.9), inset 0 1px 2px rgba(255,255,255,0.3);
+    filter: drop-shadow(0 20px 30px rgba(234, 179, 8, 0.1));
+  }
+  .c6::before { /* Edge Perforation */
+    content:''; position:absolute; top:-5px; bottom:-5px; right: 130px; width: 10px;
+    background: radial-gradient(circle at 50% 10px, transparent 4px, #0c0c0c 5px); background-size: 10px 20px; z-index: 10;
+  }
+  .c6-foil {
+    position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+    background: linear-gradient(110deg, transparent 20%, rgba(255,255,255,0.9) 40%, #eab308 50%, rgba(255,255,255,0.9) 60%, transparent 80%);
+    background-size: 300% 100%; mix-blend-mode: overlay; opacity: var(--glare-op, 0.5);
+    background-position: calc(var(--mx, 50%) * 3) 0;
+  }
+  .c6-content { flex: 1; padding: 30px; display: flex; flex-direction: column; justify-content: center; transform: translateZ(20px); }
+  .c6-content h2 { font-family: 'Cinzel'; color: #eab308; font-size: 36px; margin: 0; text-shadow: 0 2px 10px rgba(234,179,8,0.4); }
+  .c6-stub { width: 130px; background: #111; border-radius: 0 12px 12px 0; display: flex; align-items: center; justify-content: center; transform: translateZ(10px); }
+  .c6-barcode { width: 60px; height: 100px; background: repeating-linear-gradient(90deg, #eab308 0, #eab308 4px, transparent 4px, transparent 8px, #eab308 8px, #eab308 10px, transparent 10px, transparent 14px); transform: translateZ(30px) rotate(-90deg); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+
+  /* =========================================
+     C7: 5-LAYER PARALLAX ANIME VOID
+     ========================================= */
+  .c7 {
+    width: 280px; height: 400px; border-radius: 20px; border: 1px solid rgba(244, 63, 94, 0.4);
+    background: #000; overflow: hidden; box-shadow: 0 40px 80px rgba(0,0,0,0.9);
+  }
+  .c7-layer { position: absolute; inset: -40px; background-size: cover; background-position: center; transition: transform 0.1s linear; }
+  .c7-l1 { background: radial-gradient(circle at 50% 20%, #1e1b4b, #000); transform: translateZ(0); }
+  .c7-l2 { background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Ccircle cx="50" cy="50" r="40" stroke="rgba(255,255,255,0.1)" stroke-width="1" fill="none"/%3E%3C/svg%3E') center/cover; transform: translateZ(20px) rotate(calc(var(--mx, 50%) * 0.1deg)); }
+  .c7-l3 { 
+    left: 50%; top: 50%; width: 140px; height: 220px; margin: -110px 0 0 -70px;
+    background: linear-gradient(to bottom, #f43f5e, #881337); border-radius: 70px;
+    transform: translateZ(50px); box-shadow: inset 0 0 40px #000, 0 0 50px rgba(244, 63, 94, 0.6);
+  }
+  .c7-l4 { 
+    background-image: radial-gradient(circle, #f97316 2px, transparent 3px); background-size: 50px 50px;
+    transform: translateZ(80px) translateY(calc(var(--my, 50%) * -0.5)); opacity: 0.8; filter: blur(1px);
+  }
+  .c7-title { position: absolute; bottom: 30px; width: 100%; text-align: center; font-family: 'Cinzel'; font-weight: 900; font-size: 28px; color: #fff; text-shadow: 0 5px 15px #000; transform: translateZ(100px); letter-spacing: 5px; }
+
+  /* =========================================
+     C8: ARCADE CRT 3D CABINET
+     ========================================= */
+  .c8 {
+    width: 280px; height: 400px; border-radius: 20px; padding: 20px;
+    background: #111; border: 4px solid #222; border-top-color: #333; border-left-color: #333;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.9), inset 0 0 20px #000;
+    display: flex; flex-direction: column; gap: 30px;
+  }
+  .c8-screen {
+    flex: 1; background: #0a0a0a; border-radius: 30px 30px 10px 10px; border: 10px solid #000;
+    position: relative; overflow: hidden; transform: translateZ(20px) rotateX(-5deg); transform-origin: bottom;
+    box-shadow: inset 0 0 40px rgba(0,255,255,0.2), 0 10px 20px rgba(0,0,0,0.8);
+  }
+  .c8-crt { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.5) 2px, rgba(0,0,0,0.5) 4px); pointer-events: none; z-index: 10; }
+  .c8-invader {
+    position: absolute; top: 50%; left: 50%; width: 40px; height: 30px; margin: -15px 0 0 -20px;
+    background: #00f0ff; box-shadow: 0 0 20px #00f0ff;
+    clip-path: polygon(20% 0, 80% 0, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0 80%, 0 20%);
+    animation: invaderBounce 1s steps(2, end) infinite;
+  }
+  @keyframes invaderBounce { 50% { transform: translateY(-10px) scaleX(1.1); } }
+  .c8-controls { display: flex; justify-content: space-around; padding: 0 20px; transform: translateZ(40px) rotateX(20deg); }
+  .c8-btn {
+    width: 60px; height: 60px; border-radius: 50%; background: #ff0055;
+    box-shadow: 0 10px 0 #880022, 0 20px 30px rgba(0,0,0,0.8), inset 0 5px 15px rgba(255,255,255,0.4);
+    transition: all 0.1s; cursor: none;
+  }
+  .v3-card:hover .c8-btn:hover { transform: translateY(10px); box-shadow: 0 0 0 #880022, 0 5px 10px rgba(0,0,0,0.8), inset 0 5px 15px rgba(255,255,255,0.4); }
+
+  /* =========================================
+     C9: SNEAKER HOVER STAGE
+     ========================================= */
+  .c9 {
+    width: 320px; height: 320px; border-radius: 30px; background: #e2e8f0;
+    display: flex; align-items: center; justify-content: center; position: relative;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.1), 0 40px 80px rgba(0,0,0,0.6);
+  }
+  .c9-stage {
+    position: absolute; bottom: 60px; width: 200px; height: 200px;
+    background: radial-gradient(circle, #cbd5e1, #94a3b8); border-radius: 50%;
+    transform: rotateX(75deg) translateZ(0); box-shadow: 0 50px 30px rgba(0,0,0,0.3), inset 0 5px 15px #fff;
+    border: 4px solid #fff;
+  }
+  .c9-shoe-wrapper { transform: translateZ(80px); transition: transform 0.6s cubic-bezier(0.2,1,0.3,1); }
+  .c9-shoe {
+    width: 160px; height: 90px; position: relative; transform-style: preserve-3d;
+    filter: drop-shadow(0 30px 20px rgba(0,0,0,0.3));
+  }
+  /* Constructing an abstract 3D shoe */
+  .c9-s-sole { position: absolute; bottom: 0; width: 100%; height: 25px; background: #fff; border-radius: 10px 40px 20px 10px; box-shadow: inset 0 -5px 10px rgba(0,0,0,0.2); transform: translateZ(10px); }
+  .c9-s-body { position: absolute; bottom: 25px; left: 10px; width: 140px; height: 40px; background: #00e5ff; border-radius: 10px 30px 10px 10px; transform: translateZ(5px); box-shadow: inset -5px 5px 15px rgba(255,255,255,0.5); }
+  .c9-s-high { position: absolute; bottom: 65px; left: 20px; width: 50px; height: 25px; background: #111; border-radius: 10px 20px 0 0; transform: translateZ(0); }
+  
+  .c9:hover .c9-shoe-wrapper { transform: translateZ(120px) translateY(-30px) rotateY(-30deg) rotateX(10deg) scale(1.1); }
+  .c9-brand { position: absolute; top: 30px; left: 30px; color: #94a3b8; font-family: 'Space Grotesk'; font-size: 40px; font-weight: 800; opacity: 0.3; transform: translateZ(20px); }
+
+  /* =========================================
+     C10: TRUE 3D WATCH BOX
+     ========================================= */
+  .c10-scene { width: 280px; height: 280px; perspective: 2000px; }
+  .c10 { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+  
+  .c10-base { position: absolute; inset: 0; background: #1a1511; border-radius: 20px; transform: translateZ(-20px); box-shadow: 0 40px 60px rgba(0,0,0,0.9), inset 0 0 40px #000; display: flex; align-items: center; justify-content: center; border: 2px solid #3d2b1f; }
+  .c10-watch-pillow { width: 120px; height: 120px; background: #0d0a08; border-radius: 30px; box-shadow: inset 0 10px 20px #000, 0 10px 20px rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; transform: translateZ(20px); }
+  .c10-watch { width: 80px; height: 80px; border-radius: 50%; border: 6px solid var(--glow-gold); box-shadow: 0 0 30px rgba(249, 216, 119, 0.4), inset 0 0 20px rgba(0,0,0,0.8); background: radial-gradient(#111, #000); position: relative; }
+  .c10-watch::after { content:''; position:absolute; top: 10px; left: 34px; width: 2px; height: 30px; background: var(--glow-gold); transform-origin: bottom; transform: rotate(135deg); }
+  
+  .c10-lid {
+    position: absolute; inset: 0; background: linear-gradient(135deg, #3d2b1f, #1a1511); border-radius: 20px;
+    transform-origin: top; transition: transform 1s cubic-bezier(0.6, -0.2, 0.2, 1.2);
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid #5a412f; box-shadow: inset 0 2px 5px rgba(255,255,255,0.2), 0 20px 40px rgba(0,0,0,0.9);
+  }
+  .c10-lid h2 { color: var(--glow-gold); font-family: 'Cinzel'; font-size: 28px; letter-spacing: 6px; }
+  .c10-scene:hover .c10-lid { transform: rotateX(120deg) translateZ(-40px); }
+  .c10-scene:hover .c10 { transform: rotateX(20deg); }
+
+  /* =========================================
+     C11: REFRACTIVE PERFUME SLOSH
+     ========================================= */
+  .c11 {
+    width: 260px; height: 380px; border-radius: 24px;
+    background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), #fff0f5, #e2e8f0);
+    display: flex; align-items: center; justify-content: center; position: relative;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5); border: 4px solid #fff; overflow: hidden;
+  }
+  .c11-bottle {
+    width: 120px; height: 160px; background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(20px); border: 2px solid rgba(255,255,255,0.8);
+    border-radius: 20px 20px 10px 10px; position: relative; overflow: hidden;
+    transform: translateZ(60px); box-shadow: 0 30px 40px rgba(0,0,0,0.1), inset 0 0 30px rgba(255,255,255,0.5);
+    /* Liquid slosh physics via CSS */
+    transform-style: preserve-3d; transition: transform 0.2s;
+  }
+  .c11-liquid {
+    position: absolute; bottom: -20px; left: -50%; width: 200%; height: 60%;
+    background: linear-gradient(0deg, rgba(255, 0, 85, 0.3), rgba(255, 0, 85, 0.1));
+    border-radius: 40% 60% 50% 40% / 30% 40% 60% 30%;
+    animation: slosh 5s infinite linear;
+  }
+  @keyframes slosh { to { transform: translateX(50%) rotate(360deg); } }
+  .c11-cap { position: absolute; top: -40px; left: 50%; transform: translateX(-50%); width: 50px; height: 30px; background: linear-gradient(90deg, #fff, #ccc, #fff); border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+  .c11-brand { position: absolute; bottom: 40px; font-family: 'Cinzel'; font-size: 28px; color: #333; letter-spacing: 8px; transform: translateZ(30px); }
+
+  /* =========================================
+     C12: 3D ROOM CORNER FURNITURE
+     ========================================= */
+  .c12 {
+    width: 320px; height: 400px; border-radius: 0 80px 0 80px;
+    background: #f8fafc; position: relative; overflow: hidden;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.6); perspective: 1000px;
+  }
+  /* Room Walls */
+  .c12-wall-l { position: absolute; left: 0; top: 0; bottom: 0; width: 50%; background: #e2e8f0; transform-origin: right; transform: rotateY(45deg); box-shadow: inset -20px 0 40px rgba(0,0,0,0.05); }
+  .c12-wall-r { position: absolute; right: 0; top: 0; bottom: 0; width: 50%; background: #cbd5e1; transform-origin: left; transform: rotateY(-45deg); }
+  .c12-floor { position: absolute; bottom: 0; width: 100%; height: 120px; background: #94a3b8; transform-origin: bottom; transform: rotateX(60deg); }
+  
+  /* Abstract Chair (Re-engineered for 3D) */
+  .c12-chair-wrap { position: absolute; top: 150px; left: 100px; transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.2,1,0.3,1); }
+  .c12-c-seat { width: 100px; height: 100px; background: #ea580c; transform: rotateX(70deg) translateZ(40px); border-radius: 20px; box-shadow: 0 30px 30px rgba(0,0,0,0.4), inset 0 5px 10px rgba(255,255,255,0.3); }
+  .c12-c-back { width: 80px; height: 100px; background: #c2410c; transform: translate(10px, -80px) rotateX(10deg) translateZ(-20px); border-radius: 20px; box-shadow: inset 0 5px 10px rgba(255,255,255,0.2); }
+  
+  .c12:hover .c12-chair-wrap { transform: translate3d(20px, -20px, 80px) rotateY(-30deg) scale(1.2); }
+  .c12-title { position: absolute; top: 40px; left: 40px; font-size: 36px; font-weight: 800; color: #1e293b; line-height: 1; transform: translateZ(50px); }
+
+  /* =========================================
+     C13: EXTRUDING 3D BAR CHART
+     ========================================= */
+  .c13 {
+    width: 360px; height: 240px; background: #090a0f; border-radius: 24px;
+    border: 1px solid rgba(255,255,255,0.05); padding: 40px; display: flex; align-items: flex-end; justify-content: space-between;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.9); transform-style: preserve-3d;
+  }
+  .c13-floor { position: absolute; bottom: 20px; left: 20px; right: 20px; height: 100px; background: radial-gradient(ellipse at top, rgba(0, 229, 255, 0.1), transparent 60%); transform: rotateX(75deg); border-top: 1px solid rgba(0,229,255,0.3); z-index: -1; }
+  
+  .c13-bar { width: 50px; position: relative; transform-style: preserve-3d; transition: height 0.8s cubic-bezier(0.3, 1.2, 0.3, 1); height: 10px; cursor: none; }
+  .c13-bar .face { position: absolute; inset: 0; backdrop-filter: blur(5px); transition: all 0.3s; }
+  .c13-bar .front { background: rgba(0, 229, 255, 0.4); transform: translateZ(25px); border: 1px solid rgba(0, 229, 255, 0.8); }
+  .c13-bar .top { background: rgba(0, 229, 255, 0.9); height: 50px; top: -50px; transform-origin: bottom; transform: rotateX(90deg) translateZ(25px); box-shadow: 0 0 30px rgba(0, 229, 255, 0.8); }
+  .c13-bar .side { background: rgba(0, 150, 200, 0.6); width: 50px; left: 50px; transform-origin: left; transform: rotateY(90deg) translateZ(25px); border: 1px solid rgba(0, 229, 255, 0.8); }
+  
+  .v3-card:hover .c13-bar { height: var(--th); }
+  .c13-bar:hover .front { background: rgba(255, 0, 85, 0.6); border-color: #ff0055; }
+  .c13-bar:hover .top { background: #ff0055; box-shadow: 0 0 40px #ff0055; }
+  .c13-bar:hover .side { background: rgba(200, 0, 60, 0.8); border-color: #ff0055; }
+
+  /* =========================================
+     C14: NEUMORPHIC GLOW DIAL
+     ========================================= */
+  .c14 {
+    width: 280px; height: 280px; background: #e0e5ec; border-radius: 40px;
+    display: flex; align-items: center; justify-content: center; position: relative;
+    box-shadow: 20px 20px 40px #a3b1c6, -20px -20px 40px #ffffff;
+  }
+  .c14-dial-outer {
+    width: 180px; height: 180px; border-radius: 50%;
+    box-shadow: inset 10px 10px 20px #a3b1c6, inset -10px -10px 20px #ffffff;
+    display: flex; align-items: center; justify-content: center; position: relative;
+    transform: translateZ(20px);
+  }
+  .c14-dial-inner {
+    width: 120px; height: 120px; border-radius: 50%; background: #e0e5ec;
+    box-shadow: 10px 10px 20px #a3b1c6, -10px -10px 20px #ffffff;
+    display: flex; align-items: center; justify-content: center; cursor: none;
+    transition: transform 0.2s, box-shadow 0.2s; position: relative; z-index: 2;
+  }
+  .c14-dial-inner:active { box-shadow: inset 5px 5px 10px #a3b1c6, inset -5px -5px 10px #ffffff; }
+  .c14-dial-inner svg { width: 40px; height: 40px; fill: #10b981; filter: drop-shadow(0 0 10px rgba(16,185,129,0.5)); }
+  
+  /* Glowing ring that tracks mouse angle (simulated here with CSS hover state) */
+  .c14-ring { position: absolute; inset: 15px; border-radius: 50%; background: conic-gradient(from 0deg, transparent 70%, #10b981 100%); mix-blend-mode: multiply; filter: blur(4px); animation: spin 4s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* =========================================
+     C15: CLOUD STORAGE BUBBLE CYLINDER
+     ========================================= */
+  .c15 {
+    width: 320px; height: 200px; border-radius: 30px; background: #0f172a;
+    border: 1px solid rgba(255,255,255,0.1); padding: 30px; display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.8), inset 0 2px 20px rgba(0,229,255,0.1);
+  }
+  .c15-info h3 { margin: 0; color: #94a3b8; font-size: 16px; font-weight: 500; text-transform: uppercase; letter-spacing: 2px; }
+  .c15-info p { margin: 5px 0 0; font-family: 'Space Grotesk'; font-size: 48px; font-weight: 700; color: #00e5ff; text-shadow: 0 0 20px rgba(0,229,255,0.5); }
+  
+  .c15-tube {
+    width: 80px; height: 140px; border-radius: 40px; background: rgba(0,0,0,0.5);
+    border: 2px solid rgba(255,255,255,0.1); position: relative; overflow: hidden;
+    box-shadow: inset 0 0 30px #000, 0 20px 40px rgba(0,0,0,0.5); transform: translateZ(40px);
+  }
+  .c15-fill {
+    position: absolute; bottom: 0; left: 0; width: 100%; height: 75%;
+    background: linear-gradient(to top, #0055ff, #00e5ff); box-shadow: inset 0 10px 20px #fff;
+    transition: height 1s cubic-bezier(0.2,1,0.3,1);
+  }
+  /* CSS Bubbles */
+  .c15-bubble { position: absolute; background: rgba(255,255,255,0.6); border-radius: 50%; bottom: -10px; animation: rise linear infinite; }
+  @keyframes rise { to { transform: translateY(-150px) scale(1.5); opacity: 0; } }
+
+  /* =========================================
+     C16: MAGNETIC KANBAN CARD
+     ========================================= */
+  .c16 {
+    width: 300px; height: 180px; background: rgba(255,255,255,0.03); backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1); border-left: 8px solid #ff0055; border-radius: 16px;
+    padding: 30px; display: flex; flex-direction: column; justify-content: space-between;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.6); cursor: none;
+    /* Spring physics handles transform entirely in JS */
+  }
+  .c16-tag { background: rgba(255,0,85,0.1); color: #ff0055; padding: 6px 12px; border-radius: 20px; font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; width: max-content; }
+  .c16 h3 { margin: 0; font-size: 22px; font-weight: 700; transform: translateZ(20px); }
+
+  /* =========================================
+     C17: ORIGAMI 3-FOLD PASS
+     ========================================= */
+  .c17-scene { width: 340px; perspective: 2000px; display: flex; flex-direction: column; }
+  .c17-seg { background: #f8fafc; padding: 24px; color: #0f172a; position: relative; border: 1px solid #e2e8f0; }
+  
+  .c17-top { border-radius: 20px 20px 0 0; z-index: 3; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 20px 40px rgba(0,0,0,0.5); transform-origin: bottom; transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+  .c17-top h2 { margin: 0; font-size: 32px; font-family: 'Space Grotesk'; color: #ff0055; }
+  
+  .c17-mid { z-index: 2; transform-origin: top; transform: rotateX(-120deg); transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); filter: brightness(0.5); display: flex; justify-content: space-between; }
+  
+  .c17-bot { border-radius: 0 0 20px 20px; z-index: 1; transform-origin: top; transform: rotateX(120deg); transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); filter: brightness(0.2); text-align: center; }
+  
+  .v3-card:hover .c17-mid { transform: rotateX(0deg); filter: brightness(1); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+  .v3-card:hover .c17-bot { transform: rotateX(0deg); filter: brightness(1); box-shadow: 0 40px 60px rgba(0,0,0,0.8); }
+
+  /* =========================================
+     C18: 3D VOLUMETRIC WEATHER
+     ========================================= */
+  .c18 {
+    width: 300px; height: 300px; border-radius: 40px; background: linear-gradient(180deg, #1e293b, #0f172a);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1), 0 40px 80px rgba(0,0,0,0.8);
+    position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; padding: 40px;
+  }
+  .c18-temp { font-family: 'Space Grotesk'; font-size: 72px; font-weight: 300; transform: translateZ(50px); text-shadow: 0 20px 40px rgba(0,0,0,0.5); line-height: 1; }
+  
+  /* 3D Volumetric Cloud */
+  .c18-cloud { position: absolute; bottom: 80px; width: 200px; height: 80px; transform-style: preserve-3d; transform: translateZ(60px); }
+  .c18-c1 { position: absolute; bottom: 0; left: 20px; width: 160px; height: 60px; background: #fff; border-radius: 30px; box-shadow: 0 20px 30px rgba(0,0,0,0.5); transform: translateZ(10px); }
+  .c18-c2 { position: absolute; bottom: 20px; left: 50px; width: 80px; height: 80px; background: #e2e8f0; border-radius: 50%; box-shadow: inset -10px -10px 20px rgba(0,0,0,0.1); transform: translateZ(30px); }
+  .c18-c3 { position: absolute; bottom: 10px; right: 40px; width: 60px; height: 60px; background: #f8fafc; border-radius: 50%; transform: translateZ(20px); }
+  
+  /* Rain */
+  .c18-rain { position: absolute; bottom: 0; width: 2px; height: 40px; background: linear-gradient(to bottom, transparent, #00e5ff); opacity: 0; animation: rain 1s infinite linear; }
+  @keyframes rain { 0% { transform: translateY(-40px); opacity: 1; } 100% { transform: translateY(80px); opacity: 0; } }
+
+  /* =========================================
+     C19: 3D RESTAURANT BOOK FOLD
+     ========================================= */
+  .c19-scene { width: 280px; height: 360px; perspective: 2500px; }
+  .c19-book { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 1s cubic-bezier(0.6, -0.1, 0.2, 1.1); }
+  
+  .c19-cover { position: absolute; inset: 0; background: #111; border: 2px solid var(--glow-gold); border-radius: 4px 16px 16px 4px; transform-origin: left; transition: transform 1.2s cubic-bezier(0.6, -0.1, 0.2, 1.1); display: flex; align-items: center; justify-content: center; z-index: 5; box-shadow: 20px 20px 40px rgba(0,0,0,0.8), inset 5px 0 20px rgba(255,255,255,0.1); }
+  .c19-cover h2 { color: var(--glow-gold); font-family: 'Cinzel'; font-size: 32px; letter-spacing: 8px; writing-mode: vertical-rl; transform: rotate(180deg); }
+  
+  .c19-page { position: absolute; inset: 5px 5px 5px 15px; background: #fdfbf7; border-radius: 2px 10px 10px 2px; padding: 30px; display: flex; flex-direction: column; justify-content: center; gap: 20px; box-shadow: inset 10px 0 20px rgba(0,0,0,0.1); }
+  .c19-item { display: flex; justify-content: space-between; font-family: 'Cinzel'; color: #222; font-weight: 700; border-bottom: 1px dotted #ccc; }
+  
+  .c19-scene:hover .c19-book { transform: translateX(50px) rotateY(-10deg); }
+  .c19-scene:hover .c19-cover { transform: rotateY(-140deg); box-shadow: -20px 20px 40px rgba(0,0,0,0.6); }
+
+  /* =========================================
+     C20: GLOSSY POLAROID SCATTER
+     ========================================= */
+  .c20-scene { width: 280px; height: 340px; position: relative; }
+  .c20-pol {
+    position: absolute; inset: 0; background: #fff; padding: 16px 16px 70px 16px;
+    border-radius: 4px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    transition: all 0.8s cubic-bezier(0.2, 1.2, 0.3, 1); border: 1px solid #eee; display: flex; flex-direction: column;
+  }
+  .c20-img { width: 100%; height: 100%; background: #000; position: relative; overflow: hidden; }
+  .c20-img::after { content:''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.1) 100%); transform: translateZ(10px); }
+  
+  .p1 { transform: rotate(-10deg) translateZ(0); z-index: 3; } .p1 .c20-img { background: url('https://images.unsplash.com/photo-1493246507139-91e8fad9978e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80') center/cover; }
+  .p2 { transform: rotate(5deg) translateZ(-10px); z-index: 2; } .p2 .c20-img { background: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80') center/cover; }
+  .p3 { transform: rotate(15deg) translateZ(-20px); z-index: 1; } .p3 .c20-img { background: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80') center/cover; }
+  
+  .v3-card:hover .p1 { transform: translate(-140px, -20px) rotate(-25deg) translateZ(40px); box-shadow: 30px 40px 60px rgba(0,0,0,0.8); }
+  .v3-card:hover .p2 { transform: translate(0, -40px) rotate(0deg) translateZ(60px) scale(1.1); box-shadow: 0 50px 80px rgba(0,0,0,0.9); z-index: 5; }
+  .v3-card:hover .p3 { transform: translate(140px, -10px) rotate(25deg) translateZ(20px); box-shadow: -30px 40px 60px rgba(0,0,0,0.8); }
+
+</style>
+</head>
+<body>
+
+  <!-- Ambient Engine -->
+  <div class="ambient-bg"></div>
+  <div class="ambient-noise"></div>
+  <div id="cursor"></div>
+
+  <div class="grid-container">
+    
+    <!-- 1. Holographic Cyber-Debit -->
+    <div class="scene">
+      <div class="v3-card c1">
+        <div class="v3-shadow"></div><div class="v3-glare"></div><div class="c1-mesh"></div><div class="c1-svg-pattern"></div>
+        <div class="c1-chip"></div><div class="c1-brand">NEXUS</div><div class="c1-num">8888 4242 4242 0001</div>
+      </div>
+    </div>
+
+    <!-- 2. Quantum Glass Crypto -->
+    <div class="scene">
+      <div class="v3-card c2-wrap">
+        <div class="v3-shadow"></div>
+        <div class="c2-orb c2-o1"></div><div class="c2-orb c2-o2"></div>
+        <div class="c2-core">
+          <div class="v3-glare"></div>
+          <div style="transform: translateZ(20px); display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-family:'Space Grotesk'; color:#a3a3a3;">Balance</span>
+            <span style="color:#10b981; font-weight:800;">+14.2%</span>
+          </div>
+          <div class="c2-text">$1,024,420.69</div>
+          <div class="c2-chart"><svg viewBox="0 0 200 50"><path d="M0 40 Q 40 10, 80 30 T 160 20 T 200 5"/></svg></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Biometric Vault Cylinder -->
+    <div class="scene">
+      <div class="v3-card c3-scene hover-target" onclick="this.querySelector('.c3').classList.toggle('unlocked')">
+        <div class="v3-shadow"></div>
+        <div class="c3">
+          <div class="c3-face c3-front">
+            <div class="v3-glare"></div>
+            <div class="c3-fingerprint"></div>
+            <p style="margin-top:40px; font-family:'Space Grotesk'; color:#00e5ff; letter-spacing:2px; transform:translateZ(20px);">AUTHORIZE</p>
+          </div>
+          <div class="c3-face c3-back">
+            <div class="v3-glare"></div>
+            <div class="c3-dial-3d"><div class="c3-dial-ring"></div><div class="c3-dial-core"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Dynamic Exploding Wealth Fan -->
+    <div class="scene">
+      <div class="v3-card c4-wrap">
+        <div class="v3-shadow"></div>
+        <div class="c4-layer c4-l3"><h3>Metaverse</h3><p>$12,400</p></div>
+        <div class="c4-layer c4-l2"><h3>DeFi Yield</h3><p>$45,200</p></div>
+        <div class="c4-layer c4-l1"><h3>Liquid Total</h3><p>$102,800</p></div>
+      </div>
+    </div>
+
+    <!-- 5. RPG Hex Radar & Floating Crystal -->
+    <div class="scene">
+      <div class="v3-card c5">
+        <div class="v3-shadow"></div><div class="v3-glare"></div>
+        <div class="c5-crystal-core"><div class="c5-shard"></div><div class="c5-shard"></div></div>
+        <div class="c5-orbit"></div>
+        <h2 style="margin:0; font-family:'Cinzel'; font-size:28px; color:#fff; transform:translateZ(40px);">ARCHMAGE</h2>
+        <div class="c5-radar">
+          <div class="c5-radar-bar"><div class="c5-radar-fill" style="--h: 80%; --d: 0s;"></div></div>
+          <div class="c5-radar-bar"><div class="c5-radar-fill" style="--h: 60%; --d: 0.1s;"></div></div>
+          <div class="c5-radar-bar"><div class="c5-radar-fill" style="--h: 90%; --d: 0.2s;"></div></div>
+          <div class="c5-radar-bar"><div class="c5-radar-fill" style="--h: 40%; --d: 0.3s;"></div></div>
+          <div class="c5-radar-bar"><div class="c5-radar-fill" style="--h: 100%; --d: 0.4s;"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. Cinematic Gold Foil Ticket -->
+    <div class="scene">
+      <div class="v3-card c6 hover-target">
+        <div class="v3-shadow"></div><div class="c6-foil"></div>
+        <div class="c6-content">
+          <h2>INTERSTELLAR</h2>
+          <p style="margin:10px 0 0; font-family:'Space Grotesk'; color:#ccc; letter-spacing:2px;">VIP ADMISSION • ROW 12</p>
+        </div>
+        <div class="c6-stub"><div class="c6-barcode"></div></div>
+      </div>
+    </div>
+
+    <!-- 7. 5-Layer Parallax Anime Void -->
+    <div class="scene">
+      <div class="v3-card c7">
+        <div class="v3-shadow"></div><div class="v3-glare"></div>
+        <div class="c7-layer c7-l1"></div>
+        <div class="c7-layer c7-l2"></div>
+        <div class="c7-layer c7-l3"></div>
+        <div class="c7-layer c7-l4"></div>
+        <div class="c7-title">VOID</div>
+      </div>
+    </div>
+
+    <!-- 8. Arcade CRT 3D Cabinet -->
+    <div class="scene">
+      <div class="v3-card c8">
+        <div class="v3-shadow"></div>
+        <div class="c8-screen"><div class="c8-crt"></div><div class="c8-invader"></div></div>
+        <div class="c8-controls"><div class="c8-btn hover-target"></div><div class="c8-btn hover-target"></div></div>
+      </div>
+    </div>
+
+    <!-- 9. Sneaker Hover Stage -->
+    <div class="scene">
+      <div class="v3-card c9">
+        <div class="v3-shadow"></div><div class="v3-glare"></div>
+        <div class="c9-brand">AIR</div>
+        <div class="c9-stage"></div>
+        <div class="c9-shoe-wrapper">
+          <div class="c9-shoe">
+            <div class="c9-s-sole"></div><div class="c9-s-body"></div><div class="c9-s-high"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10. True 3D Watch Box -->
+    <div class="scene">
+      <div class="v3-card c10-scene">
+        <div class="v3-shadow"></div>
+        <div class="c10">
+          <div class="c10-base"><div class="c10-watch-pillow"><div class="c10-watch"></div></div></div>
+          <div class="c10-lid"><h2>LUXE</h2></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 11. Refractive Perfume Slosh -->
+    <div class="scene">
+      <div class="v3-card c11">
+        <div class="v3-shadow"></div><div class="v3-glare"></div>
+        <div class="c11-bottle"><div class="c11-liquid"></div></div>
+        <div class="c11-cap"></div>
+        <div class="c11-brand">EAU</div>
+      </div>
+    </div>
+
+    <!-- 12. 3D Room Corner Furniture -->
+    <div class="scene">
+      <div class="v3-card c12">
+        <div class="v3-shadow"></div>
+        <div class="c12-wall-l"></div><div class="c12-wall-r"></div><div class="c12-floor"></div>
+        <div class="c12-title">STUDIO<br>NO. 4</div>
+        <div class="c12-chair-wrap"><div class="c12-c-seat"></div><div class="c12-c-back"></div></div>
+      </div>
+    </div>
+
+    <!-- 13. Extruding 3D Bar Chart -->
+    <div class="scene">
+      <div class="v3-card c13 hover-target">
+        <div class="v3-shadow"></div><div class="c13-floor"></div>
+        <div class="c13-bar" style="--th: 120px;"><div class="face front"></div><div class="face top"></div><div class="face side"></div></div>
+        <div class="c13-bar" style="--th: 180px;"><div class="face front"></div><div class="face top"></div><div class="face side"></div></div>
+        <div class="c13-bar" style="--th: 100px;"><div class="face front"></div><div class="face top"></div><div class="face side"></div></div>
+        <div class="c13-bar" style="--th: 150px;"><div class="face front"></div><div class="face top"></div><div class="face side"></div></div>
+      </div>
+    </div>
+
+    <!-- 14. Neumorphic Glow Dial -->
+    <div class="scene">
+      <div class="v3-card c14">
+        <div class="v3-shadow"></div>
+        <div class="c14-dial-outer">
+          <div class="c14-ring"></div>
+          <div class="c14-dial-inner hover-target">
+            <svg viewBox="0 0 24 24"><path d="M12 2v20m10-10H2m17.07-7.07l-14.14 14.14m0-14.14l14.14 14.14" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 15. Cloud Storage Bubble Cylinder -->
+    <div class="scene">
+      <div class="v3-card c15">
+        <div class="v3-shadow"></div><div class="v3-glare"></div>
+        <div class="c15-info"><h3>Cloud Volume</h3><p>82%</p></div>
+        <div class="c15-tube">
+          <div class="c15-fill"></div>
+          <div class="c15-bubble" style="left:20px; width:10px; height:10px; animation-duration:2s;"></div>
+          <div class="c15-bubble" style="left:50px; width:15px; height:15px; animation-duration:3s; animation-delay:1s;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 16. Magnetic Kanban Card -->
+    <div class="scene">
+      <div class="v3-card c16 hover-target">
+        <div class="v3-shadow"></div><div class="v3-glare"></div>
+        <div class="c16-tag">URGENT</div>
+        <div>
+          <h3>Ship 3D Physics</h3>
+          <p style="color:#aaa; font-size:14px; font-family:'Space Grotesk'; transform:translateZ(10px);">Spring lerp physics integrated successfully.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 17. Origami 3-Fold Pass -->
+    <div class="scene">
+      <div class="v3-card c17-scene">
+        <div class="v3-shadow"></div>
+        <div class="c17-seg c17-top"><h2>NY</h2><h2>LA</h2></div>
+        <div class="c17-seg c17-mid"><div style="font-family:'Space Grotesk';">FLIGHT<br><b>V3-99</b></div><div style="font-family:'Space Grotesk'; text-align:right;">GATE<br><b>12B</b></div></div>
+        <div class="c17-seg c17-bot"><h1 style="margin:0; font-family:'Space Grotesk'; font-size:40px;">SEAT 4A</h1></div>
+      </div>
+    </div>
+
+    <!-- 18. 3D Volumetric Weather -->
+    <div class="scene">
+      <div class="v3-card c18">
+        <div class="v3-shadow"></div><div class="v3-glare"></div>
+        <div class="c18-temp">68°</div>
+        <div class="c18-cloud">
+          <div class="c18-c1"></div><div class="c18-c2"></div><div class="c18-c3"></div>
+          <div class="c18-rain" style="left:40px; animation-delay: 0.1s;"></div>
+          <div class="c18-rain" style="left:80px; animation-delay: 0.5s;"></div>
+          <div class="c18-rain" style="left:120px; animation-delay: 0.2s;"></div>
+          <div class="c18-rain" style="left:160px; animation-delay: 0.7s;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 19. 3D Restaurant Book Fold -->
+    <div class="scene">
+      <div class="v3-card c19-scene hover-target">
+        <div class="v3-shadow"></div>
+        <div class="c19-book">
+          <div class="c19-page">
+            <div class="c19-item"><span>CAVIAR</span><span>$45</span></div>
+            <div class="c19-item"><span>WAGYU</span><span>$120</span></div>
+            <div class="c19-item"><span>TRUFFLE</span><span>$85</span></div>
+          </div>
+          <div class="c19-cover"><h2>MENU</h2></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 20. Glossy Polaroid Scatter -->
+    <div class="scene">
+      <div class="v3-card c20-scene">
+        <div class="v3-shadow"></div>
+        <div class="c20-pol p3"><div class="c20-img"></div></div>
+        <div class="c20-pol p2"><div class="c20-img"></div></div>
+        <div class="c20-pol p1"><div class="c20-img"></div></div>
+      </div>
+    </div>
+
+  </div>
+
+<script>
+  // V3 ELITE PHYSICS ENGINE (SPRING LERP + MAGNETIC CURSOR)
+  const cursor = document.getElementById('cursor');
+  let mouseX = window.innerWidth / 2;
+  let mouseY = window.innerHeight / 2;
+  let cursorX = mouseX;
+  let cursorY = mouseY;
+
+  window.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  });
+
+  const cards = document.querySelectorAll('.v3-card');
+  const cardData = Array.from(cards).map(card => ({
+    el: card,
+    bounds: card.getBoundingClientRect(),
+    targetX: 0, targetY: 0,       // Target rotations
+    currentX: 0, currentY: 0,     // Current lerped rotations
+    targetZ: 0, currentZ: 0,      // Scale/Z-translation
+    isHovered: false
+  }));
+
+  // Re-calculate bounds on scroll/resize
+  const updateBounds = () => cardData.forEach(d => d.bounds = d.el.getBoundingClientRect());
+  window.addEventListener('scroll', updateBounds);
+  window.addEventListener('resize', updateBounds);
+
+  cardData.forEach(data => {
+    data.el.addEventListener('mouseenter', () => {
+      data.isHovered = true;
+      data.targetZ = 20; // Slight pop forward on hover
+      updateBounds();
+    });
+    
+    data.el.addEventListener('mouseleave', () => {
+      data.isHovered = false;
+      data.targetX = 0;
+      data.targetY = 0;
+      data.targetZ = 0;
+      data.el.style.setProperty('--glare-op', 0);
+      data.el.style.setProperty('--mx', '50%');
+      data.el.style.setProperty('--my', '50%');
+    });
+    
+    data.el.addEventListener('mousemove', (e) => {
+      const px = e.clientX - data.bounds.left;
+      const py = e.clientY - data.bounds.top;
+      const centerX = data.bounds.width / 2;
+      const centerY = data.bounds.height / 2;
+      
+      // Calculate rotation targets (max 20 degrees)
+      data.targetX = ((py - centerY) / centerY) * -20;
+      data.targetY = ((px - centerX) / centerX) * 20;
+      
+      // Update CSS variables for Lighting & Shadows
+      data.el.style.setProperty('--mx', `${(px / data.bounds.width) * 100}%`);
+      data.el.style.setProperty('--my', `${(py / data.bounds.height) * 100}%`);
+      data.el.style.setProperty('--glare-op', 1);
+    });
+  });
+
+  // Master Render Loop
+  function lerpLoop() {
+    // 1. Cursor Lerp
+    cursorX += (mouseX - cursorX) * 0.15;
+    cursorY += (mouseY - cursorY) * 0.15;
+    cursor.style.transform = `translate(${cursorX}px, ${cursorY}px)`;
+
+    // 2. Cards Physics Lerp
+    cardData.forEach(data => {
+      data.currentX += (data.targetX - data.currentX) * 0.08;
+      data.currentY += (data.targetY - data.currentY) * 0.08;
+      data.currentZ += (data.targetZ - data.currentZ) * 0.08;
+      
+      // Only apply transform if there's significant movement to save GPU
+      if (Math.abs(data.currentX) > 0.01 || Math.abs(data.currentY) > 0.01 || data.isHovered) {
+        data.el.style.transform = `translateZ(${data.currentZ}px) rotateX(${data.currentX}deg) rotateY(${data.currentY}deg)`;
+      }
+    });
+    
+    requestAnimationFrame(lerpLoop);
+  }
+  
+  // Initialize
+  setTimeout(() => {
+    updateBounds();
+    requestAnimationFrame(lerpLoop);
+  }, 100);
+</script>
+</body>
+</html>
